@@ -5,6 +5,15 @@ from concurrent import futures
 import numpy as np
 from collections import Counter
 
+def load_global_data_matrix():
+    data = []
+    for p in range(len(paras_np)):
+        para = paras_np[p]
+        para_vec = np.load(indir+"/"+para+".npy")
+        data.append(para_vec)
+    return np.array(data)
+
+
 def project_para_global_asp(p, paras, asps, aspvals, useful_asps, result_dict):
     uvals = []
     for uasp in range(len(useful_asps)):
@@ -25,30 +34,29 @@ def eigen_analysis(data_matrix):
     return proj_data, vals, vecs
 
 def usage():
-    print("parameters: art-qrels paras-file.npy aspids-file.npy aspvals-file.npy output-dir k(in %)")
+    print("parameters: art-qrels paras-file.npy global-para-vecs-dir output-dir")
 
-if len(sys.argv) < 7:
+if len(sys.argv) < 5:
     usage()
     sys.exit()
 art_qrels = sys.argv[1]
 paras_file = sys.argv[2]
-aspids_file = sys.argv[3]
-aspvals_file = sys.argv[4]
-outdir = sys.argv[5]
-k = int(sys.argv[6])
+indir = sys.argv[3]
+outdir = sys.argv[4]
 
 paras_np = np.load(paras_file)
-aspids_np = np.load(aspids_file)
-aspvals_np = np.load(aspvals_file)
+print("Loading global para vecs")
+aspval_matrix = load_global_data_matrix()
+print("Done loading")
 
-# print("Going to do eigen analysis of "+str(len(paras_np))+" paras each of "+str(len(aspval_matrix[0]))+" dimensions")
-# proj_data, eigvals, eigvecs = eigen_analysis(aspval_matrix)
-# print("Done, going to save")
-# np.save(outdir+"/useful_aspids", useful_asps)
-# np.save(outdir+"/projected-data", proj_data)
-# np.save(outdir+"/eigvals", eigvals)
-# np.save(outdir+"/eigvecs", eigvecs)
-# print("Saved")
+
+print("Going to do eigen analysis of "+str(len(paras_np))+" paras each of "+str(len(aspval_matrix[0]))+" dimensions")
+proj_data, eigvals, eigvecs = eigen_analysis(aspval_matrix)
+print("Done, going to save")
+np.save(outdir+"/projected-data", proj_data)
+np.save(outdir+"/eigvals", eigvals)
+np.save(outdir+"/eigvecs", eigvecs)
+print("Saved")
 
 
 # for page in page_para_dict.keys():
