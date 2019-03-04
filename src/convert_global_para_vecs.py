@@ -44,7 +44,7 @@ def convert_all_paras():
     # for p in range(len(paras_np)):
     #     convert_para(p, useful_aspids)
 
-    executor = concurrent.futures.ThreadPoolExecutor(10)
+    executor = concurrent.futures.ProcessPoolExecutor(10)
     futures = [executor.submit(convert_para, p, useful_aspids) for p in range(len(paras_np))]
     concurrent.futures.wait(futures)
 
