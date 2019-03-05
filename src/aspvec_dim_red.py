@@ -7,10 +7,16 @@ from collections import Counter
 
 def load_global_data_matrix():
     data = []
+    c = 0
     for p in range(len(paras_np)):
         para = paras_np[p]
-        para_vec = np.load(indir+"/"+para+".npy")
-        data.append(para_vec)
+        if os.path.isfile(indir+"/"+para+".npy"):
+            para_vec = np.load(indir+"/"+para+".npy")
+            data.append(para_vec)
+            c+=1
+            print(str(c) + "Data size: "+str(sys.getsizeof(data)/(1024.0*1024.0))+" MB")
+        else:
+            print(para+" not present in global vector dir")
     return np.array(data)
 
 
