@@ -32,11 +32,23 @@ def project_para_global_asp(p, paras, asps, aspvals, useful_asps, result_dict):
     print(".")
 
 def eigen_analysis(data_matrix):
+    print("Eigen analysis")
+    print("--------------\n")
+    print("Calculating col means...", end=' ')
     means = np.mean(data_matrix.T, axis=1)
+    print("Done")
+    print("Centering data matrix...", end=' ')
     cent_data = data_matrix - means
+    print("Done")
+    print("Calculating covariance matrix...", end=' ')
     cov_cent_data = np.cov(cent_data.T)
+    print("Done")
+    print("Performing eigenvalue decomposition...", end=' ')
     vals, vecs = np.linalg.eig(cov_cent_data)
+    print("Done")
+    print("Projecting data in transformed space...", end=' ')
     proj_data = vecs.T.dot(cov_cent_data.T)
+    print("Done")
     return proj_data, vals, vecs
 
 def usage():
@@ -56,7 +68,7 @@ aspval_matrix = load_global_data_matrix()
 print("Done loading")
 
 
-print("Going to do eigen analysis of "+str(len(paras_np))+" paras each of "+str(len(aspval_matrix[0]))+" dimensions")
+print("Going to do eigen analysis of "+str(len(paras_np))+" paras each of "+str(len(aspval_matrix[0]))+" dimensions\n")
 proj_data, eigvals, eigvecs = eigen_analysis(aspval_matrix)
 print("Done, going to save")
 np.save(outdir+"/projected-data", proj_data)
