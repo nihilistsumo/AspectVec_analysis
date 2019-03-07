@@ -75,7 +75,7 @@ outdir = sys.argv[4]
 
 paras_np = np.load(paras_file)
 print("Loading global para vecs")
-aspval_matrix = load_global_data_matrix_fast()
+aspval_matrix = load_global_data_matrix_slow()
 print("Done loading")
 
 
