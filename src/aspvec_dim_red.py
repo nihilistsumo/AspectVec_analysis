@@ -4,6 +4,8 @@ import sys, json, os, concurrent
 from concurrent import futures
 import numpy as np
 from collections import Counter
+from scipy import sparse
+from scipy.sparse.linalg import svds
 
 def load_global_data_matrix_slow():
     data = np.load(indir+"/"+paras_np[0]+".npy")
@@ -49,11 +51,18 @@ def eigen_analysis(data_matrix):
     print("Centering data matrix...")
     cent_data = data_matrix - means
     print("Done")
-    print("Calculating covariance matrix...")
-    cov_cent_data = np.cov(cent_data.T)
+    cent_data_sp = sparse.csr_matrix(cent_data)
+    print("Calculating svd...")
+    u, s, vt = svds(cent_data_sp.T, k=10)
     print("Done")
-    np.save(outdir+"/cov-matrix", cov_cent_data)
-    print("Saved covariance matrix")
+    np.save(outdir+"/u-matrix-svd", u)
+    np.save(outdir+"/singular_val_svd", s)
+    np.save(outdir + "/vt-matrix-svd", vt)
+    # print("Calculating covariance matrix...")
+    # cov_cent_data = np.cov(cent_data.T)
+    # print("Done")
+    # np.save(outdir+"/cov-matrix", cov_cent_data)
+    # print("Saved covariance matrix")
     # print("Performing eigenvalue decomposition...")
     # vals, vecs = np.linalg.eig(cov_cent_data)
     # print("Done")
