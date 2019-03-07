@@ -43,21 +43,21 @@ def project_para_global_asp(p, paras, asps, aspvals, useful_asps, result_dict):
 def eigen_analysis(data_matrix):
     print("Eigen analysis")
     print("--------------\n")
-    print("Calculating col means...", end=' ')
+    print("Calculating col means...")
     means = np.mean(data_matrix.T, axis=1)
     print("Done")
-    print("Centering data matrix...", end=' ')
+    print("Centering data matrix...")
     cent_data = data_matrix - means
     print("Done")
-    print("Calculating covariance matrix...", end=' ')
+    print("Calculating covariance matrix...")
     cov_cent_data = np.cov(cent_data.T)
     print("Done")
     np.save(outdir+"/cov-matrix", cov_cent_data)
     print("Saved covariance matrix")
-    # print("Performing eigenvalue decomposition...", end=' ')
+    # print("Performing eigenvalue decomposition...")
     # vals, vecs = np.linalg.eig(cov_cent_data)
     # print("Done")
-    # print("Projecting data in transformed space...", end=' ')
+    # print("Projecting data in transformed space...")
     # proj_data = vecs.T.dot(cov_cent_data.T)
     # print("Done")
     # return proj_data, vals, vecs
@@ -75,7 +75,7 @@ outdir = sys.argv[4]
 
 paras_np = np.load(paras_file)
 print("Loading global para vecs")
-aspval_matrix = load_global_data_matrix_slow()
+aspval_matrix = load_global_data_matrix_fast()
 print("Done loading")
 
 
