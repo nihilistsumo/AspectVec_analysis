@@ -101,7 +101,7 @@ art_qrels = sys.argv[2]
 paras_file = sys.argv[3]
 indir = sys.argv[4]
 outdir = sys.argv[5]
-k = sys.argv[6]
+k = int(sys.argv[6])
 
 paras_np = np.load(paras_file)
 print("Loading global para vecs")
