@@ -50,7 +50,7 @@ def pca_sklearn(data_matrix, svdk):
     print("Sorted explained variance")
     print(pca.explained_variance_ratio_)
     print("Total variance explained by pca components: "+str(np.sum(pca.explained_variance_ratio_)))
-    return pca.transform(data_matrix)
+    return pca.transform(data_matrix), pca.explained_variance_ratio_
 
 def svd_analysis(data_matrix, svdk):
     print("SVD analysis")
@@ -121,8 +121,9 @@ elif m == 'eig':
     np.save(outdir+"/eigvals", eigvals)
     np.save(outdir+"/eigvecs", eigvecs)
 elif m == 'pca':
-    proj_data = pca_sklearn(aspval_matrix, k)
-    np.save(outdir + "/pca-projected-data", proj_data)
+    proj_data, var_ex = pca_sklearn(aspval_matrix, k)
+    np.save(outdir + "/pca-projected-data-"+str(k), proj_data)
+    np.save(outdir + "/var-explained-"+str(k), var_ex)
 
 # for page in page_para_dict.keys():
 #     page_paras = page_para_dict[page]
