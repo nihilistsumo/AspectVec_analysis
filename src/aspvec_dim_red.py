@@ -6,7 +6,6 @@ import numpy as np
 from collections import Counter
 from scipy import sparse
 from scipy.sparse.linalg import svds
-import sklearn
 from sklearn.decomposition import PCA
 
 def load_global_data_matrix_slow():
