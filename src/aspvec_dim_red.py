@@ -143,12 +143,14 @@ elif m == 'pca-per-page':
         aspval_mat_sliced = []
         for para in page_paras[page]:
             aspval_mat_sliced.append(aspval_matrix[para])
-        proj_data, var_ex = pca_sklearn(np.array(aspval_mat_sliced), k)
+        # for pca-per-page we take min of (no. of samples and 100) and do not use the supplied k value
+        # hence all the pca data for different pages may have different number of principal components
+        proj_data, var_ex = pca_sklearn(np.array(aspval_mat_sliced), min(len(aspval_mat_sliced), 100))
         page_proj_data[page] = proj_data
         page_var_ex[page] = var_ex
         print(page+" done")
-    np.save(outdir + "/pagewise-pca-projected-data-" + str(k), page_proj_data)
-    np.save(outdir + "/pagewise-var-explained-" + str(k), page_var_ex)
+    np.save(outdir + "/pagewise-pca-projected-data", page_proj_data)
+    np.save(outdir + "/pagewise-var-explained", page_var_ex)
 
 
 # for page in page_para_dict.keys():
