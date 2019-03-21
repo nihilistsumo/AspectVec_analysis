@@ -32,6 +32,18 @@ def load_global_data_matrix_fast():
             print(para+" not present in global vector dir")
     return np.array(data)
 
+def get_page_para_dict(art_q):
+    data = dict()
+    with open(art_q) as art:
+        for l in art:
+            page = l.split(" ")[0]
+            para = l.split(" ")[2]
+            if page not in data.keys():
+                data[page] = [paras_np.tolist().index(para)]
+            else:
+                data[page].append(paras_np.tolist().index(para))
+    return data
+
 def project_para_global_asp(p, paras, asps, aspvals, useful_asps, result_dict):
     uvals = []
     for uasp in range(len(useful_asps)):
@@ -105,10 +117,11 @@ k = int(sys.argv[6])
 paras_np = np.load(paras_file)
 print("Loading global para vecs")
 aspval_matrix = load_global_data_matrix_fast()
+page_paras = get_page_para_dict(art_qrels)
 print("Done loading")
 
 
-print("Going to do svd/eigen/pca analysis of "+str(len(paras_np))+" paras each of "+str(len(aspval_matrix[0]))+" dimensions\n")
+print("Going to do svd/eigen/pca/pca-per-page analysis of "+str(len(paras_np))+" paras each of "+str(len(aspval_matrix[0]))+" dimensions\n")
 if m == 'svd':
     u, s, vt = svd_analysis(aspval_matrix, k)
     np.save(outdir + "/u-matrix-svd", u)
@@ -123,6 +136,19 @@ elif m == 'pca':
     proj_data, var_ex = pca_sklearn(aspval_matrix, k)
     np.save(outdir + "/pca-projected-data-"+str(k), proj_data)
     np.save(outdir + "/var-explained-"+str(k), var_ex)
+elif m == 'pca-per-page':
+    page_proj_data = dict()
+    page_var_ex = dict()
+    for page in page_paras.keys():
+        aspval_mat_sliced = []
+        for para in page_paras[page]:
+            aspval_mat_sliced.append(aspval_matrix[para])
+        proj_data, var_ex = pca_sklearn(np.array(aspval_mat_sliced), k)
+        page_proj_data[page] = proj_data
+        page_var_ex[page] = var_ex
+    np.save(outdir + "/pagewise-pca-projected-data-" + str(k), page_proj_data)
+    np.save(outdir + "/pagewise-var-explained-" + str(k), page_var_ex)
+
 
 # for page in page_para_dict.keys():
 #     page_paras = page_para_dict[page]
