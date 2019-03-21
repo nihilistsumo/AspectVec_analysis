@@ -146,6 +146,7 @@ elif m == 'pca-per-page':
         proj_data, var_ex = pca_sklearn(np.array(aspval_mat_sliced), k)
         page_proj_data[page] = proj_data
         page_var_ex[page] = var_ex
+        print(page+" done")
     np.save(outdir + "/pagewise-pca-projected-data-" + str(k), page_proj_data)
     np.save(outdir + "/pagewise-var-explained-" + str(k), page_var_ex)
 
