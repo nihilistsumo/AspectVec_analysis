@@ -32,18 +32,6 @@ def load_global_data_matrix_fast():
             print(para+" not present in global vector dir")
     return np.array(data)
 
-def get_page_para_dict(art_q):
-    data = dict()
-    with open(art_q) as art:
-        for l in art:
-            page = l.split(" ")[0]
-            para = l.split(" ")[2]
-            if page not in data.keys():
-                data[page] = [paras_np.tolist().index(para)]
-            else:
-                data[page].append(paras_np.tolist().index(para))
-    return data
-
 def project_para_global_asp(p, paras, asps, aspvals, useful_asps, result_dict):
     uvals = []
     for uasp in range(len(useful_asps)):
@@ -108,7 +96,7 @@ if len(sys.argv) < 6:
     usage()
     sys.exit()
 m = sys.argv[1]
-art_qrels = sys.argv[2]
+page_paras_file = sys.argv[2]
 paras_file = sys.argv[3]
 indir = sys.argv[4]
 outdir = sys.argv[5]
@@ -117,7 +105,7 @@ k = int(sys.argv[6])
 paras_np = np.load(paras_file)
 print("Loading global para vecs")
 aspval_matrix = load_global_data_matrix_fast()
-page_paras = get_page_para_dict(art_qrels)
+page_paras = np.load(page_paras_file)
 print("Done loading")
 
 
@@ -139,9 +127,9 @@ elif m == 'pca':
 elif m == 'pca-per-page':
     page_proj_data = dict()
     page_var_ex = dict()
-    for page in page_paras.keys():
+    for page in page_paras[()].keys():
         aspval_mat_sliced = []
-        for para in page_paras[page]:
+        for para in page_paras[()][page]:
             aspval_mat_sliced.append(aspval_matrix[para])
         # for pca-per-page we take min of (no. of samples and 100) and do not use the supplied k value
         # hence all the pca data for different pages may have different number of principal components
@@ -151,18 +139,3 @@ elif m == 'pca-per-page':
         print(page+" done")
     np.save(outdir + "/pagewise-pca-projected-data", page_proj_data)
     np.save(outdir + "/pagewise-var-explained", page_var_ex)
-
-
-# for page in page_para_dict.keys():
-#     page_paras = page_para_dict[page]
-#     page_aspids = []
-#     page_aspvals = []
-#     for para in page_paras:
-#         page_aspids.append(aspids_np[paras_np.tolist().index(para)])
-#         page_aspvals.append(aspvals_np[paras_np.tolist().index(para)])
-#     aspval_matrix = get_useful_aspval_mat(page_paras, page_aspids, page_aspvals)
-#     print("Going to do eigen analysis of "+str(len(page_paras))+" paras in Page: "+page)
-#     proj_data, eigvals, eigvecs = eigen_analysis(np.array(aspval_matrix))
-#     eigen_data = np.array([page_paras, proj_data, eigvals, eigvecs])
-#     print("Page: "+page+" done")
-#     np.save(outdir+"/"+page+"-eigen-data", eigen_data)
