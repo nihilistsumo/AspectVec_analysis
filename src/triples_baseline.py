@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 import sys, lucene, concurrent
+import numpy as np
 
 def find_odd(l):
-    p1 = l.split(" ")[1]
-    p2 = l.split(" ")[2]
-    p3 = l.split(" ")[3]
-    odd_gt = l.split(" ")[4]
+    p1 = paraids[l[0]]
+    p2 = paraids[l[1]]
+    p3 = paraids[l[2]]
+    odd_gt = paraids[l[2]]
 
     if frozenset((p1,p2)) in scores.keys() and frozenset((p1,p3)) in scores.keys() and frozenset((p2,p3)) in scores.keys():
         simScore12 = scores[frozenset((p1,p2))]
@@ -32,7 +33,8 @@ def find_odd(l):
 
 
 score_file = sys.argv[1]
-triples_file = sys.argv[2]
+triples_matrix_file = sys.argv[2]
+paraids_file = sys.argv[3]
 
 correct = []
 incorrect = []
@@ -45,8 +47,10 @@ with open(score_file, 'r') as sf:
         scores[frozenset((p1,p2))] = score
 print("done loading")
 missing_in_scores = 0
-with open(triples_file, 'r') as tf:
-    for l in tf:
+paraids = np.load(paraids_file)
+triples_matrix = np.load(triples_matrix_file)
+for p in triples_matrix[()].keys():
+    for l in triples_matrix[()][p]:
         iscorrect, miss = find_odd(l)
         if iscorrect:
             correct.append(l)

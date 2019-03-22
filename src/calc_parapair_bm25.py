@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import sys, lucene, concurrent, multiprocessing
 from concurrent import futures
+import numpy as np
 
 from java.nio.file import Paths
 from org.apache.lucene.analysis.standard import StandardAnalyzer
@@ -15,9 +16,9 @@ if __name__ == '__main__':
     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
 
 def calc_score(l):
-    p1 = l.split(" ")[1]
-    p2 = l.split(" ")[2]
-    p3 = l.split(" ")[3]
+    p1 = paraids[l[0]]
+    p2 = paraids[l[1]]
+    p3 = paraids[l[2]]
     qpid = QueryParser("Id", analyzer)
     qptext = QueryParser("Text", analyzer)
     BooleanQuery.setMaxClauseCount(65536)
@@ -47,10 +48,11 @@ def calc_score(l):
     print(".")
     return p1+" "+p2+" "+str(simScore12)+"\n"+p1+" "+p3+" "+str(simScore13)+"\n"+p2+" "+p3+" "+str(simScore23)+"\n"
 
-indexDir = sys.argv[1]
-anlz = sys.argv[2]
-triples_file = sys.argv[3]
-output_dir = sys.argv[4]
+paraids_file = sys.argv[1]
+indexDir = sys.argv[2]
+anlz = sys.argv[3]
+triples_matrix_file = sys.argv[4]
+output_dir = sys.argv[5]
 output_file = output_dir+"/parapair-bm25-"+anlz+"-scores"
 
 fsDir = SimpleFSDirectory(Paths.get(indexDir))
@@ -59,11 +61,12 @@ searcher.setSimilarity(BM25Similarity())
 analyzer = StandardAnalyzer()
 if anlz == 'eng':
     analyzer = EnglishAnalyzer()
+triples_matrix = np.load(triples_matrix_file)
+paraids = np.load(paraids_file)
 
-with open(triples_file, 'r') as t:
-    lines = t.readlines()
 print("done loading")
 with open(output_file, 'w') as op:
-    for l in lines:
-        op.write(calc_score(l))
+    for p in triples_matrix[()].keys():
+        for l in triples_matrix[()][p]:
+            op.write(calc_score(l))
 print("done")
